@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+    <meta charset="UTF-8">
+    <!-- Disable pinch-zoom on tablets so the drawing doesn't get messed up -->
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+    <meta name="theme-color" content="#1b1b2f">
+    <meta name="description" content="Desenează cu nisip colorat! Ține apăsat pe ecran și privește cum curge nisipul.">
+    <title>Tablouri din nisip</title>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>⏳</text></svg>">
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+    <!-- Top bar: sand colors -->
+    <nav class="bar bar-top" aria-label="Culori">
+        <div id="colors" class="group colors" role="radiogroup" aria-label="Culoarea nisipului">
+            <!-- Color buttons are created from JavaScript (see js/sand.js) -->
+        </div>
+    </nav>
+
+    <!-- Middle of the screen: the drawing area, with the tool bar placed over it in the top-right corner -->
+    <div class="middle">
+
+        <!-- Drawing area -->
+        <main id="sandArea" class="sand-area">
+            <!-- The canvas the sand falls on -->
+            <canvas id="canvas" aria-label="Pânza cu nisip. Ține apăsat ca să torni nisip."></canvas>
+
+            <!-- Start hint: disappears on the first touch -->
+            <div id="hint" class="hint">
+                <span class="hint-hand">👆</span>
+                <span>Ține degetul pe ecran!</span>
+            </div>
+        </main>
+
+        <!-- Side bar: clear and save. You can keep drawing underneath it. -->
+        <nav class="bar bar-side" aria-label="Unelte">
+
+            <!-- Actions (icons are drawn with SVG so they look the same on every computer) -->
+            <div class="group actions">
+                <!-- Clear: a big X on red, easy for kids to recognize -->
+                <button id="clearButton" class="button action clear" title="Șterge tot nisipul" aria-label="Șterge tot nisipul"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
+                <button id="saveButton" class="button action" title="Păstrează desenul" aria-label="Păstrează desenul"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 8h3l2-3h6l2 3h3a1 1 0 0 1 1 1v10a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V9a1 1 0 0 1 1-1z"/><circle cx="12" cy="13.5" r="3.5"/></svg></button>
+            </div>
+        </nav>
+    </div>
+
+    <!-- Confirmation dialog before clearing (kids may tap it by accident) -->
+    <div id="confirmDialog" class="dialog hidden" role="dialog" aria-modal="true" aria-labelledby="dialogText">
+        <div class="dialog-box">
+            <p id="dialogText" class="dialog-text">Ștergem tot nisipul?</p>
+            <div class="answers">
+                <button id="yesButton" class="button answer yes" aria-label="Da, șterge"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7"/></svg></button>
+                <!-- "No" is a back arrow, so it isn't confused with the clear X -->
+                <button id="noButton" class="button answer no" aria-label="Nu, înapoi la desen"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 14L4 9l5-5"/><path d="M4 9h11a5 5 0 0 1 0 10h-4"/></svg></button>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/sand.js"></script>
+</body>
+</html>

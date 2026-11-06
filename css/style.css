@@ -1,0 +1,327 @@
+/* ==========================================================
+   Sand Pictures — page styles
+   Designed for young kids: big buttons, bright colors, little text.
+   ========================================================== */
+
+/* --- Base interface colors --- */
+:root {
+    --background: #1b1b2f;      /* the "sky" color behind the sand */
+    --bar: rgba(255, 255, 255, 0.12);
+    --bar-border: rgba(255, 255, 255, 0.22);
+    --button: rgba(255, 255, 255, 0.16);
+    --button-pressed: rgba(255, 255, 255, 0.32);
+    --text: #ffffff;
+    --green: #2ecc71;
+    --red: #ff5a5f;
+    /* button size: grows with the screen, but never too small for fingers */
+    --button-size: clamp(44px, 4vw, 64px);
+    /* there are many color buttons, so they are smaller */
+    --color-size: clamp(26px, 2.4vw, 40px);
+}
+
+/* --- Simple reset --- */
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+html,
+body {
+    width: 100%;
+    height: 100%;
+    overflow: hidden;           /* no scrollbars */
+    background: var(--background);
+    color: var(--text);
+    font-family: "Comic Sans MS", "Chalkboard SE", "Segoe UI", system-ui, sans-serif;
+    /* Disable text selection and the long-press menu */
+    user-select: none;
+    -webkit-user-select: none;
+    -webkit-touch-callout: none;
+    -webkit-tap-highlight-color: transparent;
+}
+
+/* The page is split in two: colors on top, the drawing (with the tool bar) below */
+body {
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    height: 100dvh;             /* on phones, accounts for the browser's address bar */
+}
+
+/* --- Middle: holds the drawing area; the side bar is positioned relative to it --- */
+.middle {
+    position: relative;
+    flex: 1;
+    min-height: 0;
+    display: flex;
+}
+
+/* --- Drawing area: all remaining space --- */
+.sand-area {
+    position: relative;
+    flex: 1;
+    min-height: 0;
+    overflow: hidden;
+}
+
+/* --- The sand canvas fills the drawing area (exact size is set by JavaScript) --- */
+#canvas {
+    position: absolute;
+    top: 0;
+    left: 0;
+    display: block;
+    touch-action: none;         /* the finger draws instead of scrolling the page */
+    cursor: crosshair;
+    image-rendering: pixelated; /* sand grains stay crisp */
+}
+
+/* --- Start hint --- */
+.hint {
+    position: absolute;
+    top: 45%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+    font-size: clamp(24px, 5vw, 44px);
+    text-align: center;
+    pointer-events: none;       /* touches pass through the hint, straight to the canvas */
+    opacity: 0.9;
+    transition: opacity 0.6s;
+}
+
+.hint-hand {
+    font-size: clamp(60px, 12vw, 110px);
+    animation: bounce 1.4s ease-in-out infinite;
+}
+
+.hint.fade-out {
+    opacity: 0;
+}
+
+@keyframes bounce {
+    0%, 100% { transform: translateY(0); }
+    50%      { transform: translateY(18px); }
+}
+
+/* --- Tool bars --- */
+.bar {
+    flex-shrink: 0;
+    align-self: center;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+    gap: 12px;
+    max-width: calc(100% - 16px);
+    padding: 10px 14px;
+    background: var(--bar);
+    border: 2px solid var(--bar-border);
+    border-radius: 28px;
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    z-index: 10;
+}
+
+.bar-top {
+    margin: 10px 8px 6px;
+}
+
+/* Side bar: a small column of buttons in the top-right corner, placed OVER
+   the drawing area so you can keep drawing underneath it */
+.bar-side {
+    position: absolute;
+    top: 6px;
+    right: 8px;
+    flex-direction: column;
+    flex-wrap: nowrap;
+    padding: 10px;
+    max-width: none;
+}
+
+/* In the side bar, groups are stacked vertically */
+.bar-side .group {
+    flex-direction: column;
+    flex-wrap: nowrap;
+}
+
+/* Colors may wrap onto several rows, neatly aligned */
+.colors {
+    gap: 6px;
+}
+
+.group {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+    gap: 8px;
+}
+
+/* --- Buttons in general --- */
+.button {
+    width: var(--button-size);
+    height: var(--button-size);
+    border: none;
+    border-radius: 50%;
+    background: var(--button);
+    color: var(--text);
+    font-size: 30px;
+    line-height: 1;
+    cursor: pointer;
+    display: grid;
+    place-items: center;
+    transition: transform 0.12s, background 0.12s, box-shadow 0.12s;
+    touch-action: manipulation;
+}
+
+.button:hover {
+    background: var(--button-pressed);
+}
+
+.button:active {
+    transform: scale(0.88);
+}
+
+.button:focus-visible {
+    outline: 4px solid #fff;
+    outline-offset: 3px;
+}
+
+/* Clear button: white X on red */
+.button.clear {
+    background: var(--red);
+}
+
+.button.clear:hover {
+    background: #ff7a7e;
+}
+
+.clear .icon {
+    stroke-width: 3.4;
+}
+
+/* Drawn icons (X, camera, check mark, back arrow) */
+.icon {
+    width: 55%;
+    height: 55%;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 2.4;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+}
+
+.answer .icon {
+    stroke-width: 3.2;
+}
+
+/* --- Color buttons --- */
+.color {
+    width: var(--color-size);
+    height: var(--color-size);
+    border: 3px solid rgba(255, 255, 255, 0.35);
+}
+
+/* Selected color: thick white ring and slightly bigger */
+.color.active {
+    border-color: #fff;
+    transform: scale(1.15);
+    box-shadow: 0 0 0 4px rgba(255, 255, 255, 0.25), 0 0 18px rgba(255, 255, 255, 0.5);
+}
+
+.color.active:active {
+    transform: scale(1);
+}
+
+/* The "rainbow" button — the sand changes color by itself */
+.color.rainbow {
+    background: conic-gradient(#ff4d4d, #ffb84d, #fff04d, #5dff4d, #4dd2ff, #6b4dff, #e14dff, #ff4d4d);
+}
+
+/* --- Confirmation dialog --- */
+.dialog {
+    position: fixed;
+    inset: 0;
+    display: grid;
+    place-items: center;
+    background: rgba(0, 0, 0, 0.55);
+    z-index: 20;
+}
+
+.dialog.hidden {
+    display: none;
+}
+
+.dialog-box {
+    padding: 28px 32px;
+    background: #2a2a48;
+    border: 3px solid var(--bar-border);
+    border-radius: 28px;
+    text-align: center;
+    animation: pop-in 0.2s ease-out;
+}
+
+@keyframes pop-in {
+    from { transform: scale(0.7); opacity: 0; }
+    to   { transform: scale(1);   opacity: 1; }
+}
+
+.dialog-text {
+    font-size: clamp(22px, 4.5vw, 34px);
+    margin-bottom: 22px;
+}
+
+.answers {
+    display: flex;
+    justify-content: center;
+    gap: 32px;
+}
+
+.answer {
+    width: 96px;
+    height: 96px;
+    font-size: 48px;
+    font-weight: bold;
+}
+
+.answer.yes { background: var(--green); }
+.answer.no  { background: #5b8def; }  /* blue: means "back", not "delete" */
+
+/* --- Small screens (phones): slightly smaller buttons --- */
+@media (max-width: 720px) {
+    :root {
+        --button-size: 42px;
+        --color-size: 30px;
+    }
+
+    .button {
+        font-size: 22px;
+    }
+
+    .bar {
+        gap: 8px;
+        padding: 8px;
+        border-radius: 20px;
+    }
+
+    /* Colors stretch across the full width so more fit on one row */
+    .bar-top {
+        align-self: stretch;
+        margin: 6px 6px 4px;
+    }
+
+    .bar-side {
+        top: 4px;
+        right: 6px;
+        padding: 6px;
+    }
+
+    .colors,
+    .group {
+        gap: 5px;
+    }
+}
